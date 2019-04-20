@@ -1,0 +1,120 @@
+{% extends 'base.html' %} {% block content %}
+<script>
+	jQuery(function () {
+		jQuery("#appointment_date").datepicker({
+			changeMonth: true,
+			changeYear: true,
+			yearRange: "0:+1",
+			dateFormat: 'd MM,yy'
+		});
+	});
+</script>
+<!--breadcrumbs start-->
+<div class="breadcrumbs">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-4 col-sm-4">
+				<h1>{{heading}}</h1>
+			</div>
+		</div>
+	</div>
+</div>
+<!--breadcrumbs end-->
+
+<!--container start-->
+<div class="registration-bg">
+	<div class="row">
+		<form enctype="multipart/form-data" method="post" class="form-signin wow fadeInUp" action="" style="max-width:60%">
+			{% csrf_token %}
+			<h2 class="form-signin-heading">
+				{% if fn == "add" %}
+					Add New Appointment
+				{% elif fn == "update" %}
+					Update Appointment
+				{% endif %}
+			</h2>
+			{% if messages %}
+				<div class="alert alert-success fade in" style="margin:10px;">
+					{% for message in messages %}
+						<strong>{{ message }}</strong>
+					{% endfor %}
+				</div>
+			{% endif %}
+			<div class="login-wrap">
+				<div class="col-xs-6 form-group">
+					<label for="pwd">Select Patient</label>
+					<select name="appointment_patient_id" required class="form-control" placeholder="Select Patient" autofocus="" /> 
+					<option value="">Please Select</option>
+					{% for patient in patientlist %}
+						<option value="{{ patient.user_id }}" {% ifequal patient.user_id|stringformat:"s" appointmentdetails.appointment_patient_id %} selected="selected"{% endifequal %}>{{patient.user_name}}</option>
+					{% endfor %}
+					</select>
+				</div>
+				<div class="col-xs-6 form-group">
+					<label for="pwd">Appointment With Doctor</label>
+					<select name="appointment_doctor_id" required class="form-control" placeholder="Select Doctor" autofocus="" /> 
+					<option value="">Please Select</option>
+					{% for doctor in doctorlist %}
+						<option value="{{ doctor.user_id }}" {% ifequal doctor.user_id|stringformat:"s" appointmentdetails.appointment_doctor_id %} selected="selected"{% endifequal %}>{{doctor.user_name}}</option>
+					{% endfor %}
+					</select>
+				</div>
+				<div class="col-xs-6 form-group">
+					<label for="pwd">Select Timeslot</label>
+					<select name="appointment_timeslot_id" required class="form-control" placeholder="Select Timeslot" autofocus="" /> 
+					<option value="">Please Select</option>
+					{% for timeslot in timeslots %}
+						<option value="{{ timeslot.timeslot_id }}" {% ifequal timeslot.timeslot_id|stringformat:"s" appointmentdetails.appointment_timeslot_id %} selected="selected"{% endifequal %}>{{timeslot.timeslot_name}}</option>
+					{% endfor %}
+					</select>
+				</div>
+				<div class="col-xs-6 form-group">
+					<label for="pwd">Contact Number</label>
+					<input type="text" class="form-control" placeholder="Contact Number" autofocus="" name="appointment_contact" id="appointment_contact" value="{{appointmentdetails.appointment_contact}}">
+				</div>
+				<div class="col-xs-6 form-group">
+					<label for="pwd">Date</label>
+					<input type="text" class="form-control" placeholder="Date" autofocus="" name="appointment_date" id="appointment_date" value="{{appointmentdetails.appointment_date}}">
+				</div>
+				<div class="col-xs-6 form-group">
+					<label for="pwd">Fees</label>
+					<input type="text" class="form-control" placeholder="Fees" autofocus="" name="appointment_fees" id="appointment_fees" value="{{appointmentdetails.appointment_fees}}">
+				</div>
+				<div class="col-xs-6 form-group">
+					<label for="pwd">Address</label>
+					<input type="text" class="form-control" placeholder="Address" autofocus="" name="appointment_address" id="appointment_address" value="{{appointmentdetails.appointment_address}}">
+				</div>
+				<div class="col-xs-6 form-group">
+					<label for="pwd">Select Status</label>
+					<select name="appointment_status	" required class="form-control" placeholder="Select Status" autofocus="" /> 
+					<option value="">Please Select</option>
+					{% for status in statusList %}
+					<option value="{{ status.as_id }}" {% ifequal status.as_id|stringformat:"s" appointmentdetails.appointment_status	 %} selected="selected"{% endifequal %}>{{status.as_title}}</option>
+					{% endfor %}
+					</select>
+				</div>
+				<div class="clear"></div>
+				<div class="col-xs-6 form-group" style="clear:both">
+					<label for="pwd">Prescriptions of the Appointmet</label>
+					<textarea class="form-control" style="height:150px;" placeholder="Description" autofocus="" name="appointment_description" id="appointment_description">{{appointmentdetails.appointment_description}}</textarea>
+				</div>
+				<button class="btn btn-lg btn-login btn-block" type="submit">Submit</button>
+			</div>
+			<input type="hidden" name="act" value="save_appointment">
+			<input type="hidden" name="avail_image" value="{{appointmentdetails.appointment_image}}">
+			<input type="hidden" name="user_id" value="{{appointmentdetails.user_id}}">
+		</form>
+	</div>
+</div>
+{% if appointmentdetails %}
+<script>
+	$(".update-appointment").hide();
+</script>
+{% endif %}
+{% if request.session.appointment_level_id != 1 %}
+<script>
+	$(".role-options").hide();
+</script>
+{% endif %}
+<!--container end-->
+{% endblock content %}
